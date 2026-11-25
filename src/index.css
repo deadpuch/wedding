@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* Palette sampled from the reference template */
+@theme {
+  --font-heading: "Mrs Saint Delafield", cursive;
+  --font-sans: "Montserrat", sans-serif;
+  --color-ink: #303030;
+  --color-bg: #F3EFED;
+  --color-envelope: #F5F3EF;
+  --color-card: #FDFBF9;
+  --color-stone: #F1ECE6;
+  --color-liner: #E5DFCB;
+  --color-gold: #B08D57;
+}
+
+body {
+  background: var(--color-bg) url("/paperTexture.png") center / cover fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+@utility shadow-paper {
+  box-shadow: 0 12px 28px -10px rgb(70 55 45 / 0.3), 0 2px 6px rgb(70 55 45 / 0.08);
+}
+@utility shadow-paper-lg {
+  box-shadow: 0 28px 55px -18px rgb(70 55 45 / 0.38), 0 3px 8px rgb(70 55 45 / 0.08);
+}
+@utility caps {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+@keyframes sway {
+  from { rotate: -5deg; }
+  to { rotate: 5deg; }
+}
+.sway {
+  transform-origin: 50% 0;
+  animation: sway 2.4s ease-in-out infinite alternate;
+}
+
+/* Paper grain showing faintly through the lettering (ink at 85% over the texture) */
+main :is(h1, h2, h3, p),
+.font-heading {
+  background-image: linear-gradient(rgb(48 48 48 / 0.85), rgb(48 48 48 / 0.85)), url("/paperTexture.png");
+  background-size: auto, 500px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Script swashes (A, J) overhang the glyph box, and background-clip:text only paints inside the box.
+   Pad the box and pull it back with negative margin so layout is unchanged (base layer: utilities still win). */
+@layer base {
+  .font-heading {
+    padding: 0.3em 0.4em;
+    margin: -0.3em -0.4em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+}
