@@ -70,7 +70,7 @@ export default function Invitation() {
         {/* ================= HERO: ENVELOPE COLLAGE ================= */}
         <section className="relative h-[240cqw] mt-[6cqw]">
           <Envelope className="absolute left-[2cqw] top-0 w-[96cqw]">
-            <Polaroid src="/polaroid-car.jpg" className="slide-out left-[8cqw] top-[16cqw] w-[44cqw] -rotate-8" />
+            <Polaroid src="/polaroid-car.jpeg" className="slide-out left-[8cqw] top-[16cqw] w-[44cqw] -rotate-8" />
           </Envelope>
 
           <Oval className="z-20 left-[57cqw] top-[20cqw] w-[39cqw] h-[50cqw] rotate-10">
@@ -109,7 +109,7 @@ export default function Invitation() {
           <Flowers className="z-40 -left-[4cqw] top-[58cqw] w-[44cqw] -rotate-12" />
 
           <Polaroid src="/polaroid-hands.jpg" className="z-20 left-[64cqw] top-[76cqw] w-[38cqw] rotate-12" />
-          <Polaroid src="/polaroid-couple.jpg" className="z-30 left-[60cqw] top-[128cqw] w-[42cqw] -rotate-12" />
+          <Polaroid src="/polaroid-couple.jpeg" className="z-30 left-[60cqw] top-[128cqw] w-[42cqw] -rotate-12" />
           <Flowers className="z-40 left-[80cqw] top-[124cqw] w-[24cqw] rotate-45" />
 
           <Img src="/silk-ribbon.png" className="z-30 left-[34cqw] top-[186cqw] w-[62cqw] -rotate-12" />
