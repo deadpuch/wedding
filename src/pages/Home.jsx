@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
+// Demo track: swap this URL (or drop a file in /public and use "/song.mp3")
+export const song = new Audio("/love.mp3");
+song.loop = true;
+
 export default function Home() {
   const navigate = useNavigate();
   const ref = useRef(null);
@@ -18,6 +22,7 @@ export default function Home() {
   const open = () => {
     if (opening.current) return;
     opening.current = true;
+    song.play().catch(() => {}); // must start inside the click, browsers block autoplay otherwise
     gsap
       .timeline({ onComplete: () => navigate("/invitation") })
       .to(".envelope", { scale: 1.06, duration: 0.3, ease: "power2.out" })

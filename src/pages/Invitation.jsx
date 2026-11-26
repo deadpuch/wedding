@@ -1,22 +1,14 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Gem, Users, Church, Wine, UtensilsCrossed, CakeSlice, MapPin } from "lucide-react";
+import { MapPin, Pause, Play } from "lucide-react";
+import { song } from "./Home";
 import Countdown from "../components/Countdown";
 import WaxSeal from "../components/WaxSeal";
 import Envelope from "../components/Envelope";
 
 const MAP_LINK = "https://share.google/kYuASGGic1p6Tecjj";
-
-const TIMELINE = [
-  [Gem, "26 Dec · 11:00 AM", "Engagement"],
-  [Users, "28 Dec · 10:00 AM", "Guests arrive"],
-  [Church, "28 Dec · 10:30 AM", "Holy matrimony"],
-  [Wine, "28 Dec · 12:30 PM", "Reception"],
-  [UtensilsCrossed, "28 Dec · 1:00 PM", "Wedding feast"],
-  [CakeSlice, "28 Dec · 2:30 PM", "Cake & blessings"],
-];
 
 const Img = ({ src, className = "", ...p }) => <img src={src} alt="" draggable="false" className={`absolute pointer-events-none select-none ${className}`} {...p} />;
 const Flowers = ({ className }) => <Img src="/flowers.png" className={`drop-shadow-md ${className}`} />;
@@ -39,17 +31,18 @@ const Oval = ({ className, tone = "bg-stone", children }) => (
 export default function Invitation() {
   const navigate = useNavigate();
   const ref = useRef(null);
+  const [playing, setPlaying] = useState(!song.paused);
+  const toggleSong = () => {
+    if (song.paused) song.play().catch(() => {});
+    else song.pause();
+    setPlaying(!song.paused);
+  };
 
   useGSAP(
     () => {
-      // Like the reference: within each section every piece blurs in on its own, one after another
-      // (hero on load, the rest on scroll). Timeline rows count as separate pieces; the line draws alongside them.
+      // Like the reference: within each section every piece blurs in on its own, one after another (hero on load, the rest on scroll)
       gsap.utils.toArray("main > section, main > footer").forEach((sec) => {
-        const items = [...sec.children].flatMap((c) => (c.classList.contains("timeline") ? [...c.children].filter((x) => !x.classList.contains("tl-line")) : [c]));
-        const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top 80%" } });
-        tl.from(items, { opacity: 0, y: 40, filter: "blur(10px)", duration: 1.1, stagger: 0.22, ease: "power2.out" }, 0);
-        const line = sec.querySelector(".tl-line");
-        if (line) tl.from(line, { scaleY: 0, duration: items.length * 0.22 + 0.6, ease: "none" }, 0);
+        gsap.from(sec.children, { opacity: 0, y: 40, filter: "blur(10px)", duration: 1.1, stagger: 0.22, ease: "power2.out", scrollTrigger: { trigger: sec, start: "top 80%" } });
       });
 
       // Once the envelope has appeared: the photo slides out, then the car drives up across it and off the top
@@ -65,6 +58,9 @@ export default function Invitation() {
 
   return (
     <div ref={ref} className="overflow-x-clip">
+      <button onClick={toggleSong} aria-label={playing ? "Pause music" : "Play music"} className="fixed top-4 right-4 z-[60] size-10 rounded-full bg-white/80 shadow-md flex items-center justify-center cursor-pointer backdrop-blur">
+        {playing ? <Pause size={18} /> : <Play size={18} />}
+      </button>
       {/* Car overlay: starts just below the viewport */}
       <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
         <img src="/car.png" alt="" className="car absolute top-full left-1/2 -ml-[min(23vw,130px)] w-[min(46vw,260px)] drop-shadow-2xl" />
@@ -91,7 +87,7 @@ export default function Invitation() {
           {/* Arched invitation card */}
           <div className="absolute z-30 left-0 top-[64cqw] w-[68cqw] h-[118cqw] rounded-t-full bg-card shadow-paper-lg p-[2cqw]">
             <div className="size-full rounded-t-full border border-stone flex flex-col items-center justify-center pt-[10cqw]">
-              <p className="caps text-[3cqw]">The wedding of</p>
+              <p className="caps text-[3cqw]">The engagement of</p>
               <h1 className="font-heading text-[19cqw] leading-[0.95] my-[calc(5cqw-0.3em)]">
                 Amitha
                 <br />
@@ -99,12 +95,12 @@ export default function Invitation() {
                 <br />
                 Jobin
               </h1>
-              <p className="caps text-[3.4cqw] tracking-[0.12em] whitespace-nowrap">December 28, 2026</p>
-              <p className="caps text-[3cqw] mt-[2cqw]">Monday · 10:30 AM</p>
+              <p className="caps text-[3.4cqw] tracking-[0.12em] whitespace-nowrap">December 26, 2026</p>
+              <p className="caps text-[3cqw] mt-[2cqw]">Saturday · 11:00 AM</p>
               <p className="caps text-[2.9cqw] leading-[1.6] mt-[6cqw]">
-                St. George Jacobite
+                Parakkal Auditorium,
                 <br />
-                Syrian Church,
+                Mythree Nagar,
                 <br />
                 Mananthavady
               </p>
@@ -165,34 +161,8 @@ export default function Invitation() {
         <section className="relative pt-[22cqw] pb-[10cqw]">
           <p className="caps text-[5cqw] tracking-[0.3em]">The</p>
           <Script className="block text-[13cqw] leading-none mt-[calc(-1cqw-0.3em)] mb-[calc(5cqw-0.3em)]">countdown</Script>
-          <Countdown targetDate="2026-12-28T10:30:00+05:30" />
+          <Countdown targetDate="2026-12-26T11:00:00+05:30" />
           <Flowers className="left-1/2 -translate-x-1/2 top-[2cqw] w-[50cqw] " />
-        </section>
-
-        {/* ================= TIMELINE: centre line, events alternate sides ================= */}
-        <section className="relative pt-[12cqw] pb-[14cqw] px-[6cqw]">
-          {/* <Flowers className="-left-[4cqw] top-[2cqw] w-[30cqw] -rotate-12" />
-          <Flowers className="-right-[4cqw] top-[2cqw] w-[30cqw] rotate-12 -scale-x-100" /> */}
-          <div >
-            <p className="caps text-[4.6cqw] tracking-[0.25em]">Wedding</p>
-            <Script className="block text-[13cqw] leading-none mt-[calc(-1cqw-0.3em)]">timeline</Script>
-          </div>
-          <div className="timeline relative mt-[10cqw]">
-            <span className="tl-line absolute left-1/2 top-[6cqw] bottom-[6cqw] w-px -translate-x-1/2 bg-gold/60 origin-top" />
-            {TIMELINE.map(([Icon, time, title], i) => (
-              <div key={time} className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-[4cqw] mb-[9cqw] last:mb-0">
-                <p className={`caps text-[3.2cqw] tracking-[0.12em] leading-[1.6] ${i % 2 ? "order-3 text-left" : "order-1 text-right"}`}>
-                  {time.split(" · ")[0]}
-                  <br />
-                  {time.split(" · ")[1]}
-                </p>
-                <span className="order-2 relative z-10 grid place-items-center size-[12cqw] rounded-full bg-card border border-gold/50 shadow-paper">
-                  <Icon strokeWidth={1.3} className="size-[5.4cqw] text-gold" aria-hidden />
-                </span>
-                <Script className={`text-[7cqw] leading-none whitespace-nowrap ${i % 2 ? "order-1 text-right" : "order-3 text-left"}`}>{title}</Script>
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* ================= DETAILS CIRCLE ================= */}
@@ -204,12 +174,6 @@ export default function Invitation() {
                 <p>Saturday, Dec 26 · 11:00 AM</p>
                 <p>Parakkal Auditorium, Mythree Nagar</p>
               </div>
-              <div>
-                <h3 className="text-[4.8cqw] mb-[1cqw]">Holy matrimony</h3>
-                <p>Monday, Dec 28 · 10:30 AM</p>
-                <p>St. George Jacobite Syrian Church, Peruvaka Road</p>
-              </div>
-
             </div>
             <WaxSeal size={84} className="absolute! right-[3cqw] top-[3cqw]" />
           </div>
@@ -219,7 +183,7 @@ export default function Invitation() {
         <section className="relative h-[110cqw]">
           <Img src="/silk-ribbon.png" className="-left-[6cqw] top-[10cqw] w-[56cqw] rotate-60" />
           <Oval className="left-[34cqw] top-[2cqw] w-[62cqw] h-[84cqw] rotate-12">
-            <p className="text-[2.5cqw]">Wedding reception</p>
+            <p className="text-[2.5cqw]">Engagement venue</p>
             <h3 className="text-[5cqw] leading-[1.25] my-[2cqw] px-[8cqw]">Parakkal Auditorium</h3>
             <p className="text-[2.5cqw] leading-[1.7] px-[10cqw]">Mythree Nagar, Mananthavady, Wayanad</p>
             <a
@@ -256,7 +220,7 @@ export default function Invitation() {
             <br />
             Jobin
           </h2>
-          <p className="caps text-[4.8cqw] tracking-[0.2em] mt-[6cqw]">December 28, 2026</p>
+          <p className="caps text-[4.8cqw] tracking-[0.2em] mt-[6cqw]">December 26, 2026</p>
           <button onClick={() => navigate("/")} className="caps text-[3.4cqw] tracking-[0.25em] mt-[14cqw] cursor-pointer hover:text-gold transition-colors">
             &lt; Back to the envelope
           </button>
